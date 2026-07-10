@@ -4,6 +4,28 @@
     export function useTaskList(initialTask: Task[]=[]){
         const [tasks, setTasks]=useState<Task[]>(initialTask)
 
+        //Chantal
+        //Para el filtro de tareas
+        const [filter, setFilter]=useState<"all" | "completed" | "pending">("all");
+
+        // ############################## ksabando ##############################
+        //Funcionalidad de búsqueda
+
+        const [search, setSearch]=useState('');
+
+        const filteredTasks=tasks.filter(task=>{
+            if (filter==="pending") return !task.completed;
+            if (filter==="completed") return task.completed;
+
+            return true;
+    }).filter(task=>task.title.toLowerCase().includes(search.toLowerCase()))
+
+        // ############################################################
+
+        const total=tasks.length;
+        const pending=tasks.filter(t=>!t.completed).length;
+        const completed=tasks.filter(t=>t.completed).length;
+
         const addTask=(tasks : Task)=>setTasks(prev=>[...prev,tasks])
 
         const toggleTask=(id : string)=>
@@ -11,7 +33,7 @@
             prev.map(t=>(t.id===id ? {...t, completed : !t.completed} : t))
             )
 
-        //chantal
+        //Chantal
         const updateTask=useCallback(
             (id: string, updates: Partial<Task>)=>{
                 setTasks(prev=>
@@ -31,21 +53,33 @@
             //setTasks(prev=>prev.filter(t=>t.id!==id))
             setTasks(prevTasks=>prevTasks.filter(task=>task.id!==id))
 
+        //Chantal
+        //ksabando+Chantal
+        //[...tasks] crea una copia superficial del array original
+        //De alguna forma el bloque .sort logra hacer sort descendente (tasks más recientes primero)
+        const visibleTasks=[...tasks].filter(task=>{
+            switch (filter){
+                case "completed":
+                    return task.completed;
+                case "pending":
+                    return !task.completed;
+                default:
+                    return true;
+            }
+        }).sort(
+            (a,b)=>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+        )
+
 
         //Chantal
-        const showCompletedTasks=useCallback(()=>{
-            setTasks(prev=>prev.filter(tasks=>tasks.completed));
-        },[])
+        const showCompletedTasks=()=> setFilter("completed");
+
+        const showPendingTasks=()=> setFilter("pending");
 
         //Inspired by Chantal
-        const showPendingTasks=useCallback(()=>{
-            setTasks(prev=>prev.filter(tasks=>!tasks.completed))
-        }, [])
-
-        //Inspired by Chantal
-        const showAllTasks=useCallback(()=>{
-            setTasks()
-        }, [])
+        const showAllTasks=() =>setFilter("all")
 
         //chantal
         const getStats=useCallback(()=>{
@@ -64,6 +98,10 @@
             toggleTask,
             updateTask,
             deleteTask,
+            visibleTasks,
+            filteredTasks,
+            search, setSearch,
+            total, pending, completed,
             showCompletedTasks,
             showPendingTasks,
             showAllTasks

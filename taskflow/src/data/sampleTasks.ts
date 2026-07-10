@@ -6,7 +6,7 @@ export const sampleTasks: Task[]=[
         title: 'Buy food',
         description: 'Milk, bread, egg',
         completed: false,
-        createdAt: new Date('2026-06-20').toISOString(),
+        createdAt: new Date('2026-06-20T16:15:30').toISOString(),
         priority: 'low' as const, //... as const ¿?
         tags: ['Get offs every tuesday']
     },
@@ -15,7 +15,7 @@ export const sampleTasks: Task[]=[
         title: 'Study React',
         description: 'Hooks and components',
         completed: false,
-        createdAt: new Date('2026-06-22').toISOString(),
+        createdAt: new Date('2026-06-22T08:30:00').toISOString(),
         priority: 'low' as const,
         tags: ['Get offs every tuesday']
     },
@@ -24,7 +24,7 @@ export const sampleTasks: Task[]=[
         title: 'Do exercise',
         description: 'Strength training',
         completed: true,
-        createdAt: new Date('2026-06-18').toISOString(),
+        createdAt: new Date('2026-06-18T12:45:00').toISOString(),
         priority: 'low' as const,
         tags: ['Get offs every tuesday']
     }

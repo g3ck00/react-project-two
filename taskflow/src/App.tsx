@@ -27,6 +27,10 @@ function App(): JSX.Element {
     addTask,
     deleteTask,
     toggleTask,
+    visibleTasks,
+    filteredTasks,
+    search, setSearch,
+    total, completed, pending,
     showCompletedTasks,
     showPendingTasks,
     showAllTasks
@@ -35,6 +39,11 @@ function App(): JSX.Element {
   //ksabando
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>){
     setTitle(e.target.value);
+  }
+
+  //Chantal
+  function handleSearch(e: React.FormEvent<HTMLFormElement>){
+    e.preventDefault();
   }
 
   //ksabando
@@ -138,7 +147,14 @@ function App(): JSX.Element {
               <>
                 <h2>My Tasks</h2>
 
-                <button onClick={showAllTasks}>
+                <input
+                    value={search}
+                    onChange={(e)=>setSearch(e.target.value)}
+                    placeholder={"Buscar..."}/>
+
+                <br></br>
+
+                <button type={"submit"}>
                   All
                 </button>
 
@@ -150,7 +166,7 @@ function App(): JSX.Element {
                   Completed
                 </button>
 
-                {tasks.map(task=>(
+                {filteredTasks.map(task=>(
                   <Card key={task.id}>
                     {/*} style=textDecoration[...] = hace que el título de la tarea sea
                     tachado si el estado de esta última es "Completada" {*/}
@@ -176,15 +192,19 @@ function App(): JSX.Element {
 
                     <button
                         onClick={()=>{
-                            const conf=window.confirm("test")
+                            const conf=window.confirm("¿Eliminar esta tarea?")
                             if (conf){
                               deleteTask(task.id);
                             }
                         }}>
                           Eliminar tarea
                     </button>
+
                   </Card>
                 ))}
+
+                <br></br><p>{pending} pending of {total} total.</p>
+
               </>
               )
       }
