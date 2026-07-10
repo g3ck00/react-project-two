@@ -92,6 +92,9 @@
             };
         }, [tasks]);
 
+        const [isEditing, setIsEditing]=useState(false);
+        const [editingTask, setEditingTask]=useState<Task | null>(null);
+
         return {
             tasks,
             addTask,
@@ -102,6 +105,8 @@
             filteredTasks,
             search, setSearch,
             total, pending, completed,
+            isEditing, setIsEditing,
+            editingTask, setEditingTask,
             showCompletedTasks,
             showPendingTasks,
             showAllTasks

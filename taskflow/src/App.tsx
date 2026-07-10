@@ -1,24 +1,31 @@
-import { useState } from 'react'
-import './App.css'
+import {forwardRef, useState} from 'react';
+import type {JSX} from 'react';
+import './App.css';
 
 import Badge from "./components/Badge";
 
-import.meta.env.VITE_APP_TITLE
+import.meta.env.VITE_APP_TITLE;
 
 import Card from "./components/ui/Card.tsx";
 import Button from "./components/ui/Button.tsx";
 import Header from "./components/ui/Header.tsx";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
-import Input from "./components/ui/Input.tsx";
+import Input, {type InputProps} from "./components/ui/Input.tsx";
 import Layout from "./components/ui/Layout.tsx";
 import SkipToContent from "./components/ui/SkipToContent.tsx";
 
 import {useTaskList} from "./hooks/useTaskList.ts";
 
 import {sampleTasks} from "./data/sampleTasks.ts";
+import Input2 from "./components/ui/Input2.tsx";
+
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {type TaskFormData, taskSchema} from "./utils/validations.ts";
+import type {Task} from "./types/task.ts";
+import Modal from "./components/ui/Modal.tsx";
 
 function App(): JSX.Element {
-  const [count, setCount] = useState(0)
 
   const userName="Bryant";
 
@@ -31,10 +38,13 @@ function App(): JSX.Element {
     filteredTasks,
     search, setSearch,
     total, completed, pending,
+    editingTask, setEditingTask,
     showCompletedTasks,
     showPendingTasks,
     showAllTasks
   }=useTaskList(sampleTasks);
+
+  const [isEditing, setIsEditing]=useState(false);
 
   //ksabando
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>){
@@ -72,18 +82,23 @@ function App(): JSX.Element {
   const [title, setTitle]=useState('');
   const [description, setDescription]=useState('');
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>){
-    e.preventDefault();
-    if (!title.trim()) return
-    onAddTask({
-      id: crypto.randomUUID(),
-      title,
-      description,
-      completed: false,
-      createdAt: new Date()})
-  }
-
   // ############################################################
+
+  const Input=forwardRef<HTMLInputElement, InputProps>(
+      ({...props}, ref)=>{
+        return (
+            <input ref={ref} {...props}/>
+        )
+      }
+  )
+
+  const {
+    register,
+    formState: {errors},
+    reset,
+  }=useForm<TaskFormData>({
+    resolver: zodResolver(taskSchema)
+  });
 
   /*
   function Home(){
@@ -99,10 +114,55 @@ function App(): JSX.Element {
   }
   */
 
+  const [isCreating, setIsCreating]=useState(false);
+
   return (
       <BrowserRouter>
+
       <Layout userName={"Bryant"}>
-      <>
+
+        <>
+
+          <Button onClick={()=>{
+            setIsCreating(true);
+          }}
+          >
+            Create new task
+          </Button>
+
+          <Modal
+              isOpen={isCreating}
+              title={"Create new task"}
+              onClose={()=>setIsCreating(false)}
+          ><form onSubmit={handleSubmit}>
+            <button
+                onClick={()=>{
+                  setIsCreating(false);
+                  handleSubmit;
+                }}>
+              Guardar cambios
+            </button>
+            <Input2
+                label={"Título: "}
+                {...register("title")}
+                error={errors.title?.message}
+                value={title}
+                onChange={handleTitleChange}
+                placeholder={"Título de la tarea"}
+            >
+
+            </Input2>
+            <Input2
+                label={"Descripción: "}
+                {...register("description")}
+                error={errors.description?.message}
+            >
+            </Input2>
+          </form>
+          </Modal>
+
+
+
       {/*}
           <Routes>
             <Route path={"/"} element={<Home />}/>
@@ -110,9 +170,11 @@ function App(): JSX.Element {
             <Route path={"/about"} element={<About />}/>
           </Routes>
       {*/}
+      {/*}
         <div>
           <Card><p>Este es el contenido de la tarjeta</p></Card>
         </div>
+        {*/}
 
         <div>
           <Button
@@ -124,9 +186,7 @@ function App(): JSX.Element {
           >Botón de prueba</Button>
         </div>
 
-        <Input></Input>
-
-      {/*}ksabando{*/}
+        {/*}ksabando{*/}
         <input type={"text"}
                value={title}
                onChange={handleTitleChange}
@@ -189,6 +249,35 @@ function App(): JSX.Element {
                     >
                       {task.completed ? "Reopen":"Completed"}
                     </button>
+
+                    <button onClick={()=>{
+                      setIsEditing(true);
+                    }}
+                    >
+                      Editar
+                    </button>
+
+                    <Modal
+                      isOpen={isEditing}
+                      title={"Edit task"}
+                      onClose={()=>setIsEditing(false)}
+                    ><form>
+                      <Input2
+                          label={"Nuevo título: "}
+                          {...register("title")}
+                          error={errors.title?.message}
+                      >
+
+                      </Input2>
+                      <Input2
+                          label={"Nueva descripción: "}
+                          {...register("description")}
+                          error={errors.description?.message}
+                      >
+                      </Input2>
+                    </form>
+
+                    </Modal>
 
                     <button
                         onClick={()=>{
