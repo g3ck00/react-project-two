@@ -1,6 +1,10 @@
     import {useCallback, useState} from 'react'
     import type {Task} from '../types/task'
 
+    import {useEffect} from "react";
+
+    import api from "../services/api.ts";
+
     export function useTaskList(initialTask: Task[]=[]){
         const [tasks, setTasks]=useState<Task[]>(initialTask)
 
@@ -14,11 +18,24 @@
         const [search, setSearch]=useState('');
 
         const filteredTasks=tasks.filter(task=>{
-            if (filter==="pending") return !task.completed;
-            if (filter==="completed") return task.completed;
+            if (filter==="pending") {
+                return !task.completed;
+            } else if (filter==="completed") {
+                return task.completed;
+            } else if (filter==="all") {
+                return true;
+            } else {
+                console.log("Unknown error...");
+            }
 
-            return true;
-    }).filter(task=>task.title.toLowerCase().includes(search.toLowerCase()))
+            }).filter(task=>task.title.toLowerCase().includes(search.toLowerCase()))
+            .sort((a, b)=>{ //Para mostrar las pending tasks primero (revisar)
+                if (a.completed === b.completed){
+                    return 0;
+                }
+
+                return a.completed ? 1:-1;
+            });
 
         // ############################################################
 
@@ -26,7 +43,7 @@
         const pending=tasks.filter(t=>!t.completed).length;
         const completed=tasks.filter(t=>t.completed).length;
 
-        const addTask=(tasks : Task)=>setTasks(prev=>[...prev,tasks])
+        const createTask=(tasks : Task)=>setTasks(prev=>[...prev,tasks])
 
         const toggleTask=(id : string)=>
             setTasks(prev=>
@@ -97,7 +114,7 @@
 
         return {
             tasks,
-            addTask,
+            createTask,
             toggleTask,
             updateTask,
             deleteTask,

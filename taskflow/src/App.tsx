@@ -24,6 +24,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {type TaskFormData, taskSchema} from "./utils/validations.ts";
 import type {Task} from "./types/task.ts";
 import Modal from "./components/ui/Modal.tsx";
+import TaskForm from "./components/ui/TaskForm.tsx"
 
 function App(): JSX.Element {
 
@@ -31,7 +32,7 @@ function App(): JSX.Element {
 
   const {
     tasks,
-    addTask,
+    createTask,
     deleteTask,
     toggleTask,
     visibleTasks,
@@ -41,7 +42,8 @@ function App(): JSX.Element {
     editingTask, setEditingTask,
     showCompletedTasks,
     showPendingTasks,
-    showAllTasks
+    showAllTasks,
+      onSubmit
   }=useTaskList(sampleTasks);
 
   const [isEditing, setIsEditing]=useState(false);
@@ -57,12 +59,18 @@ function App(): JSX.Element {
   }
 
   //ksabando
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>){
-    e.preventDefault(); //Evita recargar la página
-    addTask({id: crypto.randomUUID(), title, description, completed:false,createdAt: new Date()});
-    setTitle('');
-    setDescription('');
-  }
+  const handleCreateTask = (data: TaskFormData) => {
+    createTask({
+      id: crypto.randomUUID(),
+      title: data.title,
+      description: data.description,
+      completed: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    reset();
+    setIsCreating(false);
+  };
 
   // ############################## ksabando ##############################
   const badgeConfig={
@@ -96,6 +104,7 @@ function App(): JSX.Element {
     register,
     formState: {errors},
     reset,
+      handleSubmit,
   }=useForm<TaskFormData>({
     resolver: zodResolver(taskSchema)
   });
@@ -123,6 +132,7 @@ function App(): JSX.Element {
 
         <>
 
+        {/* Para crear una nueva tarea */}
           <Button onClick={()=>{
             setIsCreating(true);
           }}
@@ -134,26 +144,24 @@ function App(): JSX.Element {
               isOpen={isCreating}
               title={"Create new task"}
               onClose={()=>setIsCreating(false)}
-          ><form onSubmit={handleSubmit}>
-            <button
-                onClick={()=>{
-                  setIsCreating(false);
-                  handleSubmit;
-                }}>
+          ><form onSubmit={handleSubmit(handleCreateTask)}>
+            <Button
+                type={"submit"}
+                >
               Guardar cambios
-            </button>
+            </Button>
             <Input2
-                label={"Título: "}
+                label={"Title: "}
                 {...register("title")}
                 error={errors.title?.message}
                 value={title}
                 onChange={handleTitleChange}
-                placeholder={"Título de la tarea"}
+                placeholder={"Title of task"}
             >
 
             </Input2>
             <Input2
-                label={"Descripción: "}
+                label={"Description: "}
                 {...register("description")}
                 error={errors.description?.message}
             >
@@ -176,33 +184,9 @@ function App(): JSX.Element {
         </div>
         {*/}
 
-        <div>
-          <Button
-            type={"submit"}
-            disabled
-            aria-label={"test"}
-            form={"taskForm"}
-            onClick={(e)=>e.preventDefault()}
-          >Botón de prueba</Button>
-        </div>
-
-        {/*}ksabando{*/}
-        <input type={"text"}
-               value={title}
-               onChange={handleTitleChange}
-               placeholder={"Título de la tarea"}
-               />
-
-        {/*}ksabando{*/}
-        <form onSubmit={handleSubmit}>
-          <input value={title}
-                 onChange={e=>setTitle(e.target.value)}/>
-          <button type={"submit"}>Agregar</button>
-        </form>
-
-        {/*}Muestra las tareas{*/}
+        {/* ##############################}Muestra las tareas{############################## */}
       {tasks.length === 0 ? (
-          <p>No hay tareas...</p>
+          <p>No tasks...</p>
           ) : (
               <>
                 <h2>My Tasks</h2>
@@ -210,11 +194,11 @@ function App(): JSX.Element {
                 <input
                     value={search}
                     onChange={(e)=>setSearch(e.target.value)}
-                    placeholder={"Buscar..."}/>
+                    placeholder={"Search..."}/>
 
                 <br></br>
 
-                <button type={"submit"}>
+                <button onClick={showAllTasks}>
                   All
                 </button>
 
@@ -254,7 +238,7 @@ function App(): JSX.Element {
                       setIsEditing(true);
                     }}
                     >
-                      Editar
+                      Edit
                     </button>
 
                     <Modal
@@ -263,14 +247,14 @@ function App(): JSX.Element {
                       onClose={()=>setIsEditing(false)}
                     ><form>
                       <Input2
-                          label={"Nuevo título: "}
+                          label={"New title: "}
                           {...register("title")}
                           error={errors.title?.message}
                       >
 
                       </Input2>
                       <Input2
-                          label={"Nueva descripción: "}
+                          label={"New description: "}
                           {...register("description")}
                           error={errors.description?.message}
                       >
@@ -281,18 +265,18 @@ function App(): JSX.Element {
 
                     <button
                         onClick={()=>{
-                            const conf=window.confirm("¿Eliminar esta tarea?")
+                            const conf=window.confirm("Delete this task?")
                             if (conf){
                               deleteTask(task.id);
                             }
                         }}>
-                          Eliminar tarea
+                          Delete task
                     </button>
 
                   </Card>
                 ))}
 
-                <br></br><p>{pending} pending of {total} total.</p>
+                <br></br><p>{pending} pending tasks of {total} total.</p>
 
               </>
               )

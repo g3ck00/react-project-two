@@ -16,4 +16,4 @@ function Button({variant="primary",
     )
 }
 
-export default Button
+export default Button;
