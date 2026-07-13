@@ -16,7 +16,6 @@ import SkipToContent from "./components/ui/SkipToContent.tsx";
 
 import {useTaskList} from "./hooks/useTaskList.ts";
 
-import {sampleTasks} from "./data/sampleTasks.ts";
 import Input2 from "./components/ui/Input2.tsx";
 
 import {useForm} from "react-hook-form";
@@ -25,6 +24,7 @@ import {type TaskFormData, taskSchema} from "./utils/validations.ts";
 import type {Task} from "./types/task.ts";
 import Modal from "./components/ui/Modal.tsx";
 import TaskForm from "./components/ui/TaskForm.tsx"
+import api from "./services/api.ts";
 
 function App(): JSX.Element {
 
@@ -43,8 +43,9 @@ function App(): JSX.Element {
     showCompletedTasks,
     showPendingTasks,
     showAllTasks,
-      onSubmit
-  }=useTaskList(sampleTasks);
+      loading,
+  }=useTaskList();
+  // }=useTaskList(...); // Algo iba allí, de la old method (JS array as DB)
 
   const [isEditing, setIsEditing]=useState(false);
 
@@ -54,11 +55,22 @@ function App(): JSX.Element {
   }
 
   //Chantal
-  function handleSearch(e: React.FormEvent<HTMLFormElement>){
+  function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
   }
 
+  const handleCreateTask=async(data:TaskFormData)=>{
+    await createTask({
+      id:crypto.randomUUID(),
+      title: data.title,
+      description: data.description ?? "",
+      completed: false,
+      createdAt: new Date().toISOString(),
+    });
+
+  /*
   //ksabando
+  // Old method (using JS array as DB)
   const handleCreateTask = (data: TaskFormData) => {
     createTask({
       id: crypto.randomUUID(),
@@ -67,6 +79,7 @@ function App(): JSX.Element {
       completed: false,
       createdAt: new Date().toISOString(),
     });
+   */
 
     reset();
     setIsCreating(false);
@@ -130,6 +143,8 @@ function App(): JSX.Element {
 
       <Layout userName={"Bryant"}>
 
+        {loading && <div className="text-center py-8"><div className="spinner" /> Loading...</div>}
+
         <>
 
         {/* Para crear una nueva tarea */}
@@ -185,6 +200,7 @@ function App(): JSX.Element {
         {*/}
 
         {/* ##############################}Muestra las tareas{############################## */}
+
       {tasks.length === 0 ? (
           <p>No tasks...</p>
           ) : (
@@ -219,7 +235,8 @@ function App(): JSX.Element {
                     </h3>
                     <p>{task.description}</p>
                     <small>{task.createdAt.toString()}</small> {/*}Revisar{*/}
-                    <p>Estado: {task.completed ? 'Completed': 'Pending'}</p>
+                    <p>Status: {task.completed ? 'Completed': 'Pending'}</p>
+                    <p>Tags: {task.tags}</p>
 
                     <button onClick={()=>toggleTask(task.id)}
                             style={{

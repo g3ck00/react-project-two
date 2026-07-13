@@ -1,3 +1,4 @@
+/*
 import type {Task} from "../types/task";
 
 export const sampleTasks: Task[]=[
@@ -31,3 +32,4 @@ export const sampleTasks: Task[]=[
 ];
 
 export default sampleTasks;
+ */

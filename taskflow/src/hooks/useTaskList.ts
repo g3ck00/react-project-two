@@ -1,12 +1,32 @@
-    import {useCallback, useState} from 'react'
+    import {useCallback, useState, useEffect} from 'react'
     import type {Task} from '../types/task'
-
-    import {useEffect} from "react";
 
     import api from "../services/api.ts";
 
     export function useTaskList(initialTask: Task[]=[]){
-        const [tasks, setTasks]=useState<Task[]>(initialTask)
+        const [tasks, setTasks]=useState<Task[]>([]);
+
+        const [loading, setLoading]=useState(true);
+        const [error, setError]=useState<string | null>(null);
+
+        useEffect(()=>{
+            loadTasks();
+        }, []);
+
+        async function loadTasks(){
+            try {
+                setLoading(true);
+                const data=await api.get("/tasks");
+                setTasks(data);
+            } catch(error) {
+                console.error("No se pudo cargar las tareas...");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        //Old method (JS array as DB)
+        //const [tasks, setTasks]=useState<Task[]>(initialTask)
 
         //Chantal
         //Para el filtro de tareas
@@ -43,7 +63,19 @@
         const pending=tasks.filter(t=>!t.completed).length;
         const completed=tasks.filter(t=>t.completed).length;
 
+        /*
         const createTask=(tasks : Task)=>setTasks(prev=>[...prev,tasks])
+         */
+
+        const createTask = async(task: Task)=>{
+            try{
+                const createdTask=await api.post("/tasks", task);
+
+                setTasks(prev=>[...prev, createdTask]);
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
         const toggleTask=(id : string)=>
             setTasks(prev=>
@@ -126,6 +158,7 @@
             editingTask, setEditingTask,
             showCompletedTasks,
             showPendingTasks,
-            showAllTasks
+            showAllTasks,
+            loading,
         }
     }

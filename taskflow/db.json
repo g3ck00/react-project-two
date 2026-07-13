@@ -19,7 +19,7 @@
       "createdAt": "2026-06-22T08:30:00.000Z",
       "priority": "low",
       "tags": [
-        "Get offs every tuesday"
+        "Focus on useEffect()"
       ]
     },
     {
@@ -30,8 +30,23 @@
       "createdAt": "2026-06-18T12:45:00.000Z",
       "priority": "low",
       "tags": [
-        "Get offs every tuesday"
+        "Try 100 kg at bench press"
       ]
+    },
+    {
+      "id": "XxRA0oKAkC4",
+      "title": "12313",
+      "description": "123123",
+      "completed": false,
+      "createdAt": "2026-07-13T21:09:20.073Z"
+    },
+    {
+      "id": "C1DetuMqwWk",
+      "title": "123",
+      "description": "123123",
+      "completed": false,
+      "createdAt": "2026-07-13T21:09:31.745Z"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
