@@ -26,13 +26,40 @@ import Modal from "./components/ui/Modal.tsx";
 import TaskForm from "./components/ui/TaskForm.tsx"
 import api from "./services/api.ts";
 
+import {lazy, Suspense} from 'react';
+//import ProtectedRoute from './components/auth/ProtectedRoute';
+import Spinner from './components/ui/Spinner.tsx';
+
+import { useAuth } from "./hooks/useAuth";
+import Login from "./components/Login";
+
+
+
+/*
+//Páginas
+const LoginPage=lazy(()=>import ('./pages/LoginPage'));
+const RegisterPage=lazy(()=>import ('./pages/RegisterPage'));
+const DashboardPage=lazy(()=>import ('./pages/DashboardPage'));
+const TaskDetailPage=lazy(()=>import ('./pages/TaskDetailPage'));
+ */
+
+
 function App(): JSX.Element {
+
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Login />;
+  }
+
+  const { logout } = useAuth();
 
   const userName="Bryant";
 
   const {
     tasks,
     createTask,
+      updateTask,
     deleteTask,
     toggleTask,
     visibleTasks,
@@ -65,7 +92,7 @@ function App(): JSX.Element {
       title: data.title,
       description: data.description ?? "",
       completed: false,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     });
 
   /*
@@ -84,6 +111,19 @@ function App(): JSX.Element {
     reset();
     setIsCreating(false);
   };
+
+const handleUpdateTask=async(data:TaskFormData)=>{
+  await updateTask({
+    ...editingTask,
+    title: data.title,
+    description: data.description ?? "",
+    completed: false,
+  });
+
+    reset();
+    setEditingTask(null);
+    setIsEditing(false);
+};
 
   // ############################## ksabando ##############################
   const badgeConfig={
@@ -139,11 +179,7 @@ function App(): JSX.Element {
   const [isCreating, setIsCreating]=useState(false);
 
   return (
-      <BrowserRouter>
-
       <Layout userName={"Bryant"}>
-
-        {loading && <div className="text-center py-8"><div className="spinner" /> Loading...</div>}
 
         <>
 
@@ -163,7 +199,7 @@ function App(): JSX.Element {
             <Button
                 type={"submit"}
                 >
-              Guardar cambios
+              Create new task
             </Button>
             <Input2
                 label={"Title: "}
@@ -200,6 +236,8 @@ function App(): JSX.Element {
         {*/}
 
         {/* ##############################}Muestra las tareas{############################## */}
+
+          {loading && <Spinner />}
 
       {tasks.length === 0 ? (
           <p>No tasks...</p>
@@ -262,7 +300,7 @@ function App(): JSX.Element {
                       isOpen={isEditing}
                       title={"Edit task"}
                       onClose={()=>setIsEditing(false)}
-                    ><form>
+                    ><form onSubmit={handleSubmit(handleUpdateTask)}>
                       <Input2
                           label={"New title: "}
                           {...register("title")}
@@ -276,8 +314,10 @@ function App(): JSX.Element {
                           error={errors.description?.message}
                       >
                       </Input2>
+                      <Button type={"submit"}>
+                        Edit task
+                      </Button>
                     </form>
-
                     </Modal>
 
                     <button
@@ -298,9 +338,11 @@ function App(): JSX.Element {
               </>
               )
       }
+          <Button onClick={logout}>
+            Log out
+          </Button>
     </>
       </Layout>
-      </BrowserRouter>
   )
 }
 

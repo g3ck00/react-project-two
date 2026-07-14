@@ -1,10 +1,24 @@
     import {useCallback, useState, useEffect} from 'react'
     import type {Task} from '../types/task'
 
+    import {useReducer} from "react";
+    import {taskReducer, initialState} from "../components/reducers/taskReducer.ts";
+
     import api from "../services/api.ts";
+    import {create} from "axios";
+
+    import useLoggerReducer from "../hooks/useLoggerReducer.ts"
 
     export function useTaskList(initialTask: Task[]=[]){
-        const [tasks, setTasks]=useState<Task[]>([]);
+
+        //Las tasks migran a "state.tasks"
+        //const [state, dispatch]=useReducer(taskReducer, initialState);
+
+        //Para usar Reducer con Logger
+        const [state, dispatch]=useLoggerReducer(taskReducer, initialState);
+
+        //Old method (antes de Reducer)
+        //const [tasks, setTasks]=useState<Task[]>([]);
 
         const [loading, setLoading]=useState(true);
         const [error, setError]=useState<string | null>(null);
@@ -17,9 +31,9 @@
             try {
                 setLoading(true);
                 const data=await api.get("/tasks");
-                setTasks(data);
+                dispatch({type: "SET_TASKS", payload: data});
             } catch(error) {
-                console.error("No se pudo cargar las tareas...");
+                console.error("Can't load tasks. Is json-server running (npx...)?");
             } finally {
                 setLoading(false);
             }
@@ -37,6 +51,42 @@
 
         const [search, setSearch]=useState('');
 
+        //
+
+        const filteredTasks=state.tasks.filter(task=>{
+
+            switch(state.filter) {
+                case "pending":
+                    return !task.completed;
+                case "completed":
+                    return task.completed;
+                case "all":
+                    return true;
+            }
+
+            /*
+            if (filter==="pending") {
+                return !task.completed;
+            } else if (filter==="completed") {
+                return task.completed;
+            } else if (filter==="all") {
+                return true;
+            } else {
+                console.log("Unknown error...");
+            }
+             */
+
+        }).filter(task=>task.title.toLowerCase().includes(search.toLowerCase()))
+            .sort((a, b)=>{ //Para mostrar las pending tasks primero (revisar)
+                if (a.completed === b.completed){
+                    return 0;
+                }
+
+                return a.completed ? 1:-1;
+            });
+
+        //Old Method: antes de Reducer
+        /*
         const filteredTasks=tasks.filter(task=>{
             if (filter==="pending") {
                 return !task.completed;
@@ -47,7 +97,6 @@
             } else {
                 console.log("Unknown error...");
             }
-
             }).filter(task=>task.title.toLowerCase().includes(search.toLowerCase()))
             .sort((a, b)=>{ //Para mostrar las pending tasks primero (revisar)
                 if (a.completed === b.completed){
@@ -56,58 +105,83 @@
 
                 return a.completed ? 1:-1;
             });
+         */
 
         // ############################################################
 
-        const total=tasks.length;
-        const pending=tasks.filter(t=>!t.completed).length;
-        const completed=tasks.filter(t=>t.completed).length;
-
-        /*
-        const createTask=(tasks : Task)=>setTasks(prev=>[...prev,tasks])
-         */
+        const total=state.tasks.length;
+        const pending=state.tasks.filter(t=>!t.completed).length;
+        const completed=state.tasks.filter(t=>t.completed).length;
 
         const createTask = async(task: Task)=>{
             try{
                 const createdTask=await api.post("/tasks", task);
 
-                setTasks(prev=>[...prev, createdTask]);
+                dispatch({type: "ADD_TASK", payload: task});
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        //Chantal
+        const updateTask= async(task: Task)=>{
+            try{
+                const updatedTask = await api.put(`/tasks/${task.id}`, task);
+
+                {
+                    dispatch({type: "UPDATE_TASK", payload: {
+                        //Extrae id y data de task
+                        id: updatedTask.id,
+                            data: updatedTask
+                    }});
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        const toggleTask=(id : string)=>
+            dispatch({type: "TOGGLE_TASK", payload: id}
+            )
+
+        //Old Method: antes de Reducer
+        /*
+        const total=tasks.length;
+        const pending=tasks.filter(t=>!t.completed).length;
+        const completed=tasks.filter(t=>t.completed).length;
+
+        const createTask=(tasks : Task)=>setTasks(prev=>[...prev,tasks])
+
+        const createTask = async(task: Task)=>{
+            try{
+                const createdTask=await api.post("/tasks", task);
+
+                dispatch(prev=>[...prev, createdTask]);
             } catch (error) {
                 console.error(error);
             }
         };
 
         const toggleTask=(id : string)=>
-            setTasks(prev=>
+            dispatch(prev=>
             prev.map(t=>(t.id===id ? {...t, completed : !t.completed} : t))
             )
+         */
 
-        //Chantal
-        const updateTask=useCallback(
-            (id: string, updates: Partial<Task>)=>{
-                setTasks(prev=>
-                prev.map(tasks=>
-                tasks.id===id
-                ? {...tasks, ...updates}
-                : tasks
-                )
-            );
-            },
-            []
-        )
-
+        /*
         //ksabando?
         //Eliminar tarea
         const deleteTask=(id : string)=>
             //setTasks(prev=>prev.filter(t=>t.id!==id))
             setTasks(prevTasks=>prevTasks.filter(task=>task.id!==id))
+         */
 
         //Chantal
         //ksabando+Chantal
         //[...tasks] crea una copia superficial del array original
         //De alguna forma el bloque .sort logra hacer sort descendente (tasks más recientes primero)
-        const visibleTasks=[...tasks].filter(task=>{
-            switch (filter){
+        const visibleTasks=[...state.tasks].filter(task=>{
+            switch (state.filter){
                 case "completed":
                     return task.completed;
                 case "pending":
@@ -123,33 +197,22 @@
 
 
         //Chantal
-        const showCompletedTasks=()=> setFilter("completed");
+        const showCompletedTasks=()=> dispatch({type: "SET_FILTER", payload:"completed"});
 
-        const showPendingTasks=()=> setFilter("pending");
+        const showPendingTasks=()=> dispatch({type: "SET_FILTER", payload:"pending"});
 
         //Inspired by Chantal
-        const showAllTasks=() =>setFilter("all")
-
-        //chantal
-        const getStats=useCallback(()=>{
-            const completed=tasks.filter(task=>task.completed).length;
-
-            const pending=tasks.length - completed;
-
-            return{
-                total: tasks.length, completed, pending,
-            };
-        }, [tasks]);
+        const showAllTasks=() =>dispatch({type: "SET_FILTER", payload:"all"})
 
         const [isEditing, setIsEditing]=useState(false);
         const [editingTask, setEditingTask]=useState<Task | null>(null);
 
         return {
-            tasks,
+            tasks: state.tasks,
             createTask,
             toggleTask,
             updateTask,
-            deleteTask,
+            //deleteTask,
             visibleTasks,
             filteredTasks,
             search, setSearch,

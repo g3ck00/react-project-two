@@ -46,6 +46,70 @@
       "description": "123123",
       "completed": false,
       "createdAt": "2026-07-13T21:09:31.745Z"
+    },
+    {
+      "id": "CBRkbJGJ5uQ",
+      "title": "kjkk",
+      "description": "kkk",
+      "completed": false,
+      "createdAt": "2026-07-14T15:18:46.891Z"
+    },
+    {
+      "id": "3bU_2BbwGJ0",
+      "title": "12312",
+      "description": "123123",
+      "completed": false,
+      "createdAt": "2026-07-14T19:04:17.216Z"
+    },
+    {
+      "id": "z_TR52tztzE",
+      "title": "prueba 14 de julio",
+      "description": "prueba de hoy, bueno de ayer, bueno de hace una semana, bueno, de antes",
+      "completed": false,
+      "createdAt": "2026-07-14T19:08:59.449Z"
+    },
+    {
+      "id": "rsgLEgamMpM",
+      "title": "test",
+      "description": "prueba2",
+      "completed": false,
+      "createdAt": "2026-07-14T19:09:12.719Z"
+    },
+    {
+      "id": "ICG9Zn_3pOg",
+      "title": "test",
+      "description": "rwar",
+      "completed": false,
+      "createdAt": "2026-07-14T19:09:44.223Z"
+    },
+    {
+      "id": "7iVDT8cO3fk",
+      "title": "prueba2",
+      "description": "prueba2222",
+      "completed": false,
+      "createdAt": "2026-07-14T19:18:06.944Z"
+    },
+    {
+      "id": "06ytrI3FtZc",
+      "title": "asd",
+      "description": "asd",
+      "completed": false,
+      "createdAt": "2026-07-14T20:36:52.254Z"
+    },
+    {
+      "id": "TROw09nd1zU",
+      "title": "asdasd",
+      "description": "asd",
+      "completed": false,
+      "createdAt": "2026-07-14T20:42:45.205Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "bryant",
+      "email": "bryant@test.com",
+      "password": "123"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

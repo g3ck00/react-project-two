@@ -11,17 +11,20 @@ function Header({userName}: HeaderProps){
             className={"header"}
             role={"banner"}
         >
-            <h1>TaskFlow - Gestor de Tareas</h1>
+            <h1>TaskFlow - Task Manager</h1>
+
+            <nav className={"app-nav"}>
+
+                <NavLink to={"/"} end>[ Home | </NavLink>
+                <NavLink to={"/dashboard"}> Dashboard ]</NavLink>
 
             <div className={"header-user"}>
-                ¡Hola, {userName}!
+                Guten tag, {userName}!
             </div>
 
             <div>
-                <nav className={"header-nav"}>
-                    <NavLink to={"/"}>[ Inicio | </NavLink><NavLink to={"/tasks"}> Tareas |</NavLink><NavLink to={"/about"}> Acerca de ]</NavLink>
-                </nav>
             </div>
+            </nav>
         </header>
     )
 }
