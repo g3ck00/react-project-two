@@ -16,6 +16,8 @@ import SkipToContent from "./components/ui/SkipToContent.tsx";
 
 import {useTaskList} from "./hooks/useTaskList.ts";
 
+import {useTasks} from "./hooks/useTasks.ts";
+
 import Input2 from "./components/ui/Input2.tsx";
 
 import {useForm} from "react-hook-form";
@@ -32,8 +34,7 @@ import Spinner from './components/ui/Spinner.tsx';
 
 import { useAuth } from "./hooks/useAuth";
 import Login from "./components/Login";
-
-
+import {useDebounce} from "./hooks/useDebounce.ts";
 
 /*
 //Páginas
@@ -42,24 +43,27 @@ const RegisterPage=lazy(()=>import ('./pages/RegisterPage'));
 const DashboardPage=lazy(()=>import ('./pages/DashboardPage'));
 const TaskDetailPage=lazy(()=>import ('./pages/TaskDetailPage'));
  */
-
+import Home from "./pages/Home.tsx"
+import Tasks from "./pages/Tasks.tsx"
+import About from "./pages/About.tsx"
+import Footer from "./components/ui/Footer.tsx";
 
 function App(): JSX.Element {
 
-  const { isAuthenticated } = useAuth();
+  const {isAuthenticated} = useAuth();
 
   if (!isAuthenticated) {
-    return <Login />;
+    return <Login/>;
   }
 
-  const { logout } = useAuth();
+  const {logout} = useAuth();
 
-  const userName="Bryant";
+  const userName = "Bryant";
 
   const {
     tasks,
     createTask,
-      updateTask,
+    updateTask,
     deleteTask,
     toggleTask,
     visibleTasks,
@@ -70,14 +74,15 @@ function App(): JSX.Element {
     showCompletedTasks,
     showPendingTasks,
     showAllTasks,
-      loading,
-  }=useTaskList();
+    loading,
+      name, setName,
+  } = useTasks();
   // }=useTaskList(...); // Algo iba allí, de la old method (JS array as DB)
 
-  const [isEditing, setIsEditing]=useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   //ksabando
-  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>){
+  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setTitle(e.target.value);
   }
 
@@ -86,67 +91,68 @@ function App(): JSX.Element {
     e.preventDefault();
   }
 
-  const handleCreateTask=async(data:TaskFormData)=>{
+  const handleCreateTask = async (data: TaskFormData) => {
     await createTask({
-      id:crypto.randomUUID(),
+      id: crypto.randomUUID(),
       title: data.title,
       description: data.description ?? "",
       completed: false,
       createdAt: new Date().toISOString()
     });
 
-  /*
-  //ksabando
-  // Old method (using JS array as DB)
-  const handleCreateTask = (data: TaskFormData) => {
-    createTask({
-      id: crypto.randomUUID(),
-      title: data.title,
-      description: data.description,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    });
-   */
+    /*
+    //ksabando
+    // Old method (using JS array as DB)
+    const handleCreateTask = (data: TaskFormData) => {
+      createTask({
+        id: crypto.randomUUID(),
+        title: data.title,
+        description: data.description,
+        completed: false,
+        createdAt: new Date().toISOString(),
+      });
+     */
 
     reset();
     setIsCreating(false);
   };
 
-const handleUpdateTask=async(data:TaskFormData)=>{
-  await updateTask({
-    ...editingTask,
-    title: data.title,
-    description: data.description ?? "",
-    completed: false,
-  });
+  const handleUpdateTask = async (data: TaskFormData) => {
+
+    if (!editingTask) {
+      console.error("No task selected? Gosh!");
+      return;
+    }
+
+    await updateTask({
+      ...editingTask,
+      title: data.title,
+      description: data.description ?? "",
+    });
 
     reset();
     setEditingTask(null);
     setIsEditing(false);
-};
+  };
 
-  // ############################## ksabando ##############################
-  const badgeConfig={
+  const badgeConfig = {
     pending: {label: 'Pending', className: 'badge-danger'},
     inProgress: {label: 'In progress', className: 'badge-warning'},
     completed: {label: 'Completed', className: 'badge-success'},
   } as const
 
-  function TaskBadge({status}:{status: keyof typeof badgeConfig}){
-    const config=badgeConfig[status]
+  function TaskBadge({status}: { status: keyof typeof badgeConfig }) {
+    const config = badgeConfig[status]
     return <span className={config.className}>{config.label}</span>
   }
 
   // ############################################################
 
-  // ############################## ksabando ##############################
-  const [title, setTitle]=useState('');
-  const [description, setDescription]=useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
-  // ############################################################
-
-  const Input=forwardRef<HTMLInputElement, InputProps>(
-      ({...props}, ref)=>{
+  const Input = forwardRef<HTMLInputElement, InputProps>(
+      ({...props}, ref) => {
         return (
             <input ref={ref} {...props}/>
         )
@@ -157,8 +163,8 @@ const handleUpdateTask=async(data:TaskFormData)=>{
     register,
     formState: {errors},
     reset,
-      handleSubmit,
-  }=useForm<TaskFormData>({
+    handleSubmit,
+  } = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema)
   });
 
@@ -176,15 +182,32 @@ const handleUpdateTask=async(data:TaskFormData)=>{
   }
   */
 
-  const [isCreating, setIsCreating]=useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+
+  // ==================== Update Task ====================
+
+  const [text, setText]=useState("");
+
+  const debouncedWrite=useDebounce(text, 1000);
+
+
+
+  // ============================================================
 
   return (
-      <Layout userName={"Bryant"}>
-
+      <BrowserRouter>
         <>
 
-        {/* Para crear una nueva tarea */}
-          <Button onClick={()=>{
+            <Routes>
+              <Route path={"/"} element={<Layout/>}>
+                <Route index element={<Home />}/>
+                <Route path={"tasks"} element={<Tasks />}/>
+                <Route path={"about"} element={<About />}/>
+              </Route>
+            </Routes>
+
+          {/* Para crear una nueva tarea */}
+          <Button onClick={() => {
             setIsCreating(true);
           }}
           >
@@ -194,60 +217,60 @@ const handleUpdateTask=async(data:TaskFormData)=>{
           <Modal
               isOpen={isCreating}
               title={"Create new task"}
-              onClose={()=>setIsCreating(false)}
-          ><form onSubmit={handleSubmit(handleCreateTask)}>
-            <Button
-                type={"submit"}
-                >
-              Create new task
-            </Button>
-            <Input2
-                label={"Title: "}
-                {...register("title")}
-                error={errors.title?.message}
-                value={title}
-                onChange={handleTitleChange}
-                placeholder={"Title of task"}
-            >
+              onClose={() => setIsCreating(false)}
+          >
+            <form onSubmit={handleSubmit(handleCreateTask)}>
+              <Button
+                  type={"submit"}
+              >
+                Create new task
+              </Button>
+              <Input2
+                  label={"Title: "}
+                  {...register("title")}
+                  error={errors.title?.message}
+                  value={title}
+                  onChange={handleTitleChange}
+                  placeholder={"Title of task"}
+              >
 
-            </Input2>
-            <Input2
-                label={"Description: "}
-                {...register("description")}
-                error={errors.description?.message}
-            >
-            </Input2>
-          </form>
+              </Input2>
+              <Input2
+                  label={"Description: "}
+                  {...register("description")}
+                  error={errors.description?.message}
+              >
+              </Input2>
+            </form>
           </Modal>
 
 
-
-      {/*}
+          {/*}
           <Routes>
             <Route path={"/"} element={<Home />}/>
             <Route path={"/tasks"} element={<Tasks />}/>
             <Route path={"/about"} element={<About />}/>
           </Routes>
       {*/}
-      {/*}
+          {/*}
         <div>
           <Card><p>Este es el contenido de la tarjeta</p></Card>
         </div>
         {*/}
 
-        {/* ##############################}Muestra las tareas{############################## */}
+          {/* ##############################}Muestra las tareas{############################## */}
 
-          {loading && <Spinner />}
+          {loading && <Spinner/>}
 
-      {tasks.length === 0 ? (
-          <p>No tasks...</p>
+          {tasks.length === 0 ? (
+              <p>No tasks...</p>
           ) : (
               <>
                 <h2>My Tasks</h2>
 
                 <input
                     value={search}
-                    onChange={(e)=>setSearch(e.target.value)}
+                    onChange={(e) => setSearch(e.target.value)}
                     placeholder={"Search..."}/>
 
                 <br></br>
@@ -264,86 +287,124 @@ const handleUpdateTask=async(data:TaskFormData)=>{
                   Completed
                 </button>
 
-                {filteredTasks.map(task=>(
-                  <Card key={task.id}>
-                    {/*} style=textDecoration[...] = hace que el título de la tarea sea
+                {filteredTasks.map(task => (
+                    <Card key={task.id}>
+                      {/*} style=textDecoration[...] = hace que el título de la tarea sea
                     tachado si el estado de esta última es "Completada" {*/}
-                    <h3 style={{textDecoration: task.completed ? "line-through" : "none"}}>
-                      {task.title}
-                    </h3>
-                    <p>{task.description}</p>
-                    <small>{task.createdAt.toString()}</small> {/*}Revisar{*/}
-                    <p>Status: {task.completed ? 'Completed': 'Pending'}</p>
-                    <p>Tags: {task.tags}</p>
+                      <h3 style={{textDecoration: task.completed ? "line-through" : "none"}}>
+                        {task.title}
+                      </h3>
+                      <p>{task.description}</p>
+                      <small>{task.createdAt.toString()}</small> {/*}Revisar{*/}
+                      <p>Status: {task.completed ? 'Completed' : 'Pending'}</p>
+                      <p>Tags: {task.tags}</p>
 
-                    <button onClick={()=>toggleTask(task.id)}
-                            style={{
-                              backgroundColor: task.completed ? "grey" : "green",
-                              color: "white",
-                              border: "none",
-                              padding: "0.5rem 1rem",
-                              borderRadius:"6px",
-                              cursor: "pointer",
-                            }}
-                    >
-                      {task.completed ? "Reopen":"Completed"}
-                    </button>
-
-                    <button onClick={()=>{
-                      setIsEditing(true);
-                    }}
-                    >
-                      Edit
-                    </button>
-
-                    <Modal
-                      isOpen={isEditing}
-                      title={"Edit task"}
-                      onClose={()=>setIsEditing(false)}
-                    ><form onSubmit={handleSubmit(handleUpdateTask)}>
-                      <Input2
-                          label={"New title: "}
-                          {...register("title")}
-                          error={errors.title?.message}
+                      <button onClick={async () => await toggleTask(task.id)}
+                              style={{
+                                backgroundColor: task.completed ? "grey" : "green",
+                                color: "white",
+                                border: "none",
+                                padding: "0.5rem 1rem",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                              }}
                       >
+                        {task.completed ? "Reopen" : "Completed"}
+                      </button>
 
-                      </Input2>
-                      <Input2
-                          label={"New description: "}
-                          {...register("description")}
-                          error={errors.description?.message}
+                      <button onClick={() => {
+                        setEditingTask(task);
+
+                        reset({
+                          title: task.title,
+                          description: task.description,
+                        });
+
+                        setIsEditing(true);
+                      }}
                       >
-                      </Input2>
-                      <Button type={"submit"}>
-                        Edit task
-                      </Button>
-                    </form>
-                    </Modal>
+                        Edit
+                      </button>
 
-                    <button
-                        onClick={()=>{
-                            const conf=window.confirm("Delete this task?")
-                            if (conf){
-                              deleteTask(task.id);
+                      <Modal
+                          isOpen={isEditing && editingTask?.id === task.id}
+                          title={"Edit task"}
+                          onClose={() => setIsEditing(false)}
+                      >
+                        <form onSubmit={handleSubmit(handleUpdateTask)}>
+                          <Input2
+                              label={"New title: "}
+                              {...register("title")}
+                              error={errors.title?.message}
+                          >
+
+                          </Input2>
+                          <Input2
+                              label={"New description: "}
+                              {...register("description")}
+                              error={errors.description?.message}
+                          >
+                          </Input2>
+                          <Button type={"submit"}>
+                            Edit task
+                          </Button>
+                        </form>
+                      </Modal>
+
+                      <button
+                          onClick={async () => {
+                            const conf = window.confirm("Delete this task?")
+                            if (conf) {
+                              await deleteTask(task.id);
                             }
-                        }}>
-                          Delete task
-                    </button>
+                          }}>
+                        Delete task
+                      </button>
 
-                  </Card>
+                    </Card>
                 ))}
 
                 <br></br><p>{pending} pending tasks of {total} total.</p>
 
               </>
-              )
-      }
+          )
+          }
+
           <Button onClick={logout}>
             Log out
           </Button>
-    </>
-      </Layout>
-  )
+
+          {/* ==================== useLocalStorage ==================== */}
+
+          <p>useLocalStorage</p>
+
+          <input value={name}
+                 onChange={e => setName(e.target.value)}/>
+
+          {/* ============================================================ */}
+
+          {/* ==================== useDebounced ==================== */}
+
+          <p>useDebounced</p>
+
+          <input
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Write here..."
+          />
+
+          <input
+              value={debouncedWrite}
+              placeholder={"Must be replicated here in 1 second..."}
+              readOnly
+          />
+          {/* ============================================================ */}
+
+          <Footer/>
+
+        </>
+      </BrowserRouter>
+        )
 }
 
 export default App

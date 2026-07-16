@@ -5,6 +5,7 @@ export const initialState: TaskState={
     loading: false,
     error: null,
     filter: 'all',
+    search: "",
 }
 
 export interface TaskState {
@@ -12,10 +13,12 @@ export interface TaskState {
     loading: boolean,
     error: string | null,
     filter: "all" | "completed" | "pending";
+    search: string;
 }
 
 export type TaskAction =
     | {type: "SET_TASKS"; payload: Task[]}
+    | {type: "SET_SEARCH"; payload: string}
     | {type: "ADD_TASK"; payload: Task}
     | {type: "SET_ERROR"; payload: string | null}
     | {type: "SET_LOADING"; payload: boolean}
@@ -31,6 +34,12 @@ export function taskReducer(state: TaskState, action: TaskAction): TaskState{
 
             case 'ADD_TASK':
             return {...state, tasks: [...state.tasks, action.payload]};
+
+        case "SET_SEARCH":
+            return {
+                ...state,
+                search: action.payload,
+            };
 
             case 'UPDATE_TASK':
             return {

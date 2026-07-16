@@ -15,9 +15,6 @@ function Header({userName}: HeaderProps){
 
             <nav className={"app-nav"}>
 
-                <NavLink to={"/"} end>[ Home | </NavLink>
-                <NavLink to={"/dashboard"}> Dashboard ]</NavLink>
-
             <div className={"header-user"}>
                 Guten tag, {userName}!
             </div>

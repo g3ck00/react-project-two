@@ -4,7 +4,7 @@
       "id": "1",
       "title": "Buy food",
       "description": "Milk, bread, egg",
-      "completed": false,
+      "completed": true,
       "createdAt": "2026-06-20T16:15:30.000Z",
       "priority": "low",
       "tags": [
@@ -15,7 +15,7 @@
       "id": "2",
       "title": "Study React",
       "description": "Hooks and components",
-      "completed": false,
+      "completed": true,
       "createdAt": "2026-06-22T08:30:00.000Z",
       "priority": "low",
       "tags": [
@@ -35,73 +35,10 @@
     },
     {
       "id": "XxRA0oKAkC4",
-      "title": "12313",
-      "description": "123123",
-      "completed": false,
+      "title": "editado dummy2",
+      "description": "editado2",
+      "completed": true,
       "createdAt": "2026-07-13T21:09:20.073Z"
-    },
-    {
-      "id": "C1DetuMqwWk",
-      "title": "123",
-      "description": "123123",
-      "completed": false,
-      "createdAt": "2026-07-13T21:09:31.745Z"
-    },
-    {
-      "id": "CBRkbJGJ5uQ",
-      "title": "kjkk",
-      "description": "kkk",
-      "completed": false,
-      "createdAt": "2026-07-14T15:18:46.891Z"
-    },
-    {
-      "id": "3bU_2BbwGJ0",
-      "title": "12312",
-      "description": "123123",
-      "completed": false,
-      "createdAt": "2026-07-14T19:04:17.216Z"
-    },
-    {
-      "id": "z_TR52tztzE",
-      "title": "prueba 14 de julio",
-      "description": "prueba de hoy, bueno de ayer, bueno de hace una semana, bueno, de antes",
-      "completed": false,
-      "createdAt": "2026-07-14T19:08:59.449Z"
-    },
-    {
-      "id": "rsgLEgamMpM",
-      "title": "test",
-      "description": "prueba2",
-      "completed": false,
-      "createdAt": "2026-07-14T19:09:12.719Z"
-    },
-    {
-      "id": "ICG9Zn_3pOg",
-      "title": "test",
-      "description": "rwar",
-      "completed": false,
-      "createdAt": "2026-07-14T19:09:44.223Z"
-    },
-    {
-      "id": "7iVDT8cO3fk",
-      "title": "prueba2",
-      "description": "prueba2222",
-      "completed": false,
-      "createdAt": "2026-07-14T19:18:06.944Z"
-    },
-    {
-      "id": "06ytrI3FtZc",
-      "title": "asd",
-      "description": "asd",
-      "completed": false,
-      "createdAt": "2026-07-14T20:36:52.254Z"
-    },
-    {
-      "id": "TROw09nd1zU",
-      "title": "asdasd",
-      "description": "asd",
-      "completed": false,
-      "createdAt": "2026-07-14T20:42:45.205Z"
     }
   ],
   "users": [

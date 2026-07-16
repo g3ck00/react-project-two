@@ -74,7 +74,7 @@
             } else {
                 console.log("Unknown error...");
             }
-             */
+            */
 
         }).filter(task=>task.title.toLowerCase().includes(search.toLowerCase()))
             .sort((a, b)=>{ //Para mostrar las pending tasks primero (revisar)
@@ -131,7 +131,7 @@
                 {
                     dispatch({type: "UPDATE_TASK", payload: {
                         //Extrae id y data de task
-                        id: updatedTask.id,
+                        id: task.id,
                             data: updatedTask
                     }});
                 }
@@ -140,9 +140,21 @@
             }
         }
 
-        const toggleTask=(id : string)=>
-            dispatch({type: "TOGGLE_TASK", payload: id}
-            )
+        const toggleTask=async (id : string)=> {
+
+            try {
+
+                const task=state.tasks.find(t=>t.id===id);
+
+                if (!task) return;
+
+                const updatedTask=await api.patch(`/tasks/${id}`, {completed: !task.completed});
+
+                dispatch({type: "TOGGLE_TASK", payload: id});
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
         //Old Method: antes de Reducer
         /*
@@ -168,13 +180,17 @@
             )
          */
 
-        /*
         //ksabando?
         //Eliminar tarea
-        const deleteTask=(id : string)=>
-            //setTasks(prev=>prev.filter(t=>t.id!==id))
-            setTasks(prevTasks=>prevTasks.filter(task=>task.id!==id))
-         */
+        const deleteTask= async (id : string)=> {
+            try {
+                await api.delete(`/tasks/${id}`);
+
+                dispatch({type: "DELETE_TASK", payload: id});
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
         //Chantal
         //ksabando+Chantal
@@ -212,7 +228,7 @@
             createTask,
             toggleTask,
             updateTask,
-            //deleteTask,
+            deleteTask,
             visibleTasks,
             filteredTasks,
             search, setSearch,

@@ -9,7 +9,7 @@ export const taskSchema = z.object({
     description: z
         .string()
         .max(500, "Description can't be longer than 500 characters....")
-        .optional()
+        .optional(),
 })
 
 export type TaskFormData=z.infer<typeof taskSchema>;

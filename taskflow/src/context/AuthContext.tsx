@@ -5,6 +5,7 @@ interface AuthState {
     user: User | null
     token: string | null
     isAuthenticated: boolean
+    register: (email: string, password: string) => Promise<void>
     login: (email: string, password: string) => Promise<void>
     logout: () => void
 }
