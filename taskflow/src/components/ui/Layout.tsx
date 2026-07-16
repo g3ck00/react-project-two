@@ -4,6 +4,8 @@ import Footer from "./Footer.tsx";
 import SkipToContent from "./SkipToContent.tsx";
 
 import {NavLink, Outlet} from 'react-router-dom';
+import Button from "./Button.tsx";
+import {useAuth} from "../../hooks/useAuth.ts";
 
 interface LayoutProps {
     children:React.ReactNode;
@@ -11,9 +13,11 @@ interface LayoutProps {
 }
 
 export default function Layout({
-    //children,
+
+                                   //children,
     showHeader=true,
                 }: LayoutProps){
+
     return(
         <div className="app-layout">
                 {/*}<SkipToContent/>{*/}
@@ -23,7 +27,8 @@ export default function Layout({
                 <nav style={{padding: "1rem"}}>
                     <NavLink to={"/"}>Home</NavLink>{" | "}
                     <NavLink to={"/tasks"}>Tasks</NavLink>{" | "}
-                    <NavLink to={"/about"}>About</NavLink>
+                    <NavLink to={"/about"}>About</NavLink>{" | "}
+                    <NavLink to={"/lab"}>Lab</NavLink>
                 </nav>
 
                 {/* children */}
@@ -34,7 +39,7 @@ export default function Layout({
 
                 </main>
 
-                <br></br><br></br><Footer></Footer>
+                <br></br><Footer></Footer>
         </div>
     );
 }

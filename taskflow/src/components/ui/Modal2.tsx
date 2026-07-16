@@ -19,21 +19,25 @@ function Modal({
                }: ModalProps): JSX.Element | null{
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className={"modal-overlay"}
              onClick={(e)=>e.stopPropagation()}
              style={{
                  position: "fixed",
                  inset: 0,
-                 backgroundColor: "rgba(0, 0, 0, 0.5)",
+                 backgroundColor: "rgba(0,0,0,0.5)",
                  display: "flex",
                  justifyContent: "center",
                  alignItems: "center",
                  zIndex: 1000,
+                 background: "black",
+                 padding: "1.5rem",
+                 borderRadius: "8px",
+                 minWidth: "400px"
              }}
         >
 
-            <div className={"modal"}
+            <div className={"modal2"}
                  onClick={(e) => e.stopPropagation()}
             >
                 <header className={"modal-header"}>
@@ -56,7 +60,7 @@ function Modal({
                         border: "none",
                         background: "transparent",
                         cursor: "pointer",
-                        fontSize: "1.2rem",
+                        fontSize: "1.2rem"
                     }}>
                         ✕
                     </button>
@@ -66,7 +70,9 @@ function Modal({
                     {children}
                 </div>
             </div>
-        </div>
+        </div>,
+
+        document.body
     )
 }
 

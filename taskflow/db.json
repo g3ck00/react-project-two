@@ -4,7 +4,7 @@
       "id": "1",
       "title": "Buy food",
       "description": "Milk, bread, egg",
-      "completed": true,
+      "completed": false,
       "createdAt": "2026-06-20T16:15:30.000Z",
       "priority": "low",
       "tags": [
@@ -15,7 +15,7 @@
       "id": "2",
       "title": "Study React",
       "description": "Hooks and components",
-      "completed": true,
+      "completed": false,
       "createdAt": "2026-06-22T08:30:00.000Z",
       "priority": "low",
       "tags": [
@@ -26,7 +26,7 @@
       "id": "3",
       "title": "Do exercise",
       "description": "Strength training",
-      "completed": true,
+      "completed": false,
       "createdAt": "2026-06-18T12:45:00.000Z",
       "priority": "low",
       "tags": [
