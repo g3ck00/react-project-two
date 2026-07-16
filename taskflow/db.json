@@ -1,17 +1,6 @@
 {
   "tasks": [
     {
-      "id": "1",
-      "title": "Buy food",
-      "description": "Milk, bread, egg",
-      "completed": false,
-      "createdAt": "2026-06-20T16:15:30.000Z",
-      "priority": "low",
-      "tags": [
-        "Get offs every tuesday"
-      ]
-    },
-    {
       "id": "2",
       "title": "Study React",
       "description": "Hooks and components",
@@ -34,11 +23,11 @@
       ]
     },
     {
-      "id": "XxRA0oKAkC4",
-      "title": "editado dummy2",
-      "description": "editado2",
-      "completed": true,
-      "createdAt": "2026-07-13T21:09:20.073Z"
+      "id": "GYK3KThQ9Tc",
+      "title": "Buy food",
+      "description": "Milk, eggs, bread",
+      "completed": false,
+      "createdAt": "2026-07-16T22:05:22.777Z"
     }
   ],
   "users": [

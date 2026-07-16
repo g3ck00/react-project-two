@@ -1,3 +1,5 @@
+import {globalIgnores} from "eslint/config";
+
 import Button from "../components/ui/Button.tsx";
 import Modal from "../components/ui/Modal.tsx";
 import Input2 from "../components/ui/Input2.tsx";
@@ -44,6 +46,7 @@ import About from "../pages/About.tsx"
 import Header from "../components/ui/Header.tsx";
 import Modal2 from "../components/ui/Modal2.tsx";
 import TaskCard from "../components/ui/TaskCard.tsx";
+import type {InputProps} from "../components/ui/Input.tsx";
 
 export default function Tasks() {
 
@@ -283,7 +286,33 @@ export default function Tasks() {
                 />
             ))}
 
-            {/*}<Modal2
+            <Modal
+                isOpen={isEditing}
+                title={"Edit task"}
+                onClose={() => {
+                    setIsEditing(false);
+                    setEditingTask(null);
+                    reset();
+                }}
+            >
+                <form onSubmit={handleSubmit(handleUpdateTask)}>
+                    <Input2
+                        label={"Title: "}
+                        {...register("title")}
+                        error={errors.title?.message}
+                        defaultValue={editingTask?.title}
+                    />
+                    <Input2
+                        label={"Description: "}
+                        {...register("description")}
+                        error={errors.description?.message}
+                        defaultValue={editingTask?.description}
+                    />
+                    <Button type={"submit"}>Save changes</Button>
+                </form>
+            </Modal>
+
+            <Modal2
                 isOpen={taskToDelete!==null}
                 onClose={()=>setTaskToDelete(null)}
                 title={"Delete task"}
@@ -307,7 +336,6 @@ export default function Tasks() {
                     Cancel
                 </button>
             </Modal2>
-            {*/}
 
             <br></br><p>{pending} pending tasks of {total} total.</p>
 

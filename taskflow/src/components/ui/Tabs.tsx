@@ -2,6 +2,26 @@ import {createContext, useContext, useState} from "react";
 
 const TabsContext = createContext<TabsContextType | null>(null);
 
+interface TabsContextType {
+    activeIndex: number;
+    setActiveIndex: (index: number) => void;
+}
+
+interface TabsProps {
+    children: React.ReactNode;
+    defaultIndex?: number;
+}
+
+interface TabProps {
+    index: number;
+    children: React.ReactNode;
+}
+
+interface TabPanelProps {
+    index: number;
+    children: React.ReactNode;
+}
+
 function Tabs({ defaultIndex = 0, children }: TabsProps) {
     const [activeIndex, setActiveIndex] = useState(defaultIndex);
     return (
@@ -31,3 +51,5 @@ function TabPanel({ index, children }: TabPanelProps) {
 
 Tabs.Tab = Tab;
 Tabs.TabPanel = TabPanel;
+
+export default Tabs;
