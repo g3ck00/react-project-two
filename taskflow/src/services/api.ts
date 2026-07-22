@@ -28,4 +28,10 @@ api.interceptors.response.use(
     (error)=>Promise.reject(error)
 )
 
+export interface ApiResponse<T>{
+    data: T;
+    message: string;
+    success: boolean;
+}
+
 export default api;

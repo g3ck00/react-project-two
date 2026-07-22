@@ -1,9 +1,9 @@
-// components/Login.tsx
+// components/LoginPage.tsx
 
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth.ts";
 
-export default function Login() {
+export default function LoginPage() {
     const { login } = useAuth();
 
     const [name, setName] = useState("");
@@ -35,6 +35,7 @@ export default function Login() {
                 type="password"
                 placeholder="Password"
                 value={password}
+
                 onChange={(e) => setPassword(e.target.value)}
             />
 

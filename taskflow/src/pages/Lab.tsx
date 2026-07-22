@@ -5,6 +5,8 @@ import {useTasks} from "../hooks/useTasks.ts";
 import Modal2 from "../components/ui/Modal2.tsx";
 import Button from "../components/ui/Button.tsx";
 
+import {render, screen} from "@testing-library/react";
+
 export default function Home() {
 
     const {
@@ -18,6 +20,14 @@ export default function Home() {
     const [isOpenModal2, setIsOpenModal2] = useState(false);
 
         const inputRef=useRef<HTMLInputElement>(null);
+
+        test("renders button", ()=>{
+            render(<Button>Save</Button>);
+
+            expect(
+                screen.getByText("Save")
+            ).toBeInTheDocument();
+        });
 
     return (
         <>

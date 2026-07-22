@@ -31,7 +31,7 @@ import {lazy, Suspense} from 'react';
 //import ProtectedRoute from './components/auth/ProtectedRoute';
 
 import { useAuth } from "../hooks/useAuth";
-import Login from "../components/Login";
+import LoginPage from "../components/LoginPage.tsx";
 import {useDebounce} from "../hooks/useDebounce.ts";
 
 /*
@@ -47,13 +47,16 @@ import Header from "../components/ui/Header.tsx";
 import Modal2 from "../components/ui/Modal2.tsx";
 import TaskCard from "../components/ui/TaskCard.tsx";
 import type {InputProps} from "../components/ui/Input.tsx";
+import CardSkeleton from "../components/ui/CardSkeleton.tsx";
+import {ErrorBoundary} from "react-error-boundary";
+import List from "../components/ui/List.tsx";
 
 export default function Tasks() {
 
     const {isAuthenticated} = useAuth();
 
     if (!isAuthenticated) {
-        return <Login/>;
+        return <LoginPage/>;
     }
 
     const {logout} = useAuth();
@@ -148,7 +151,7 @@ export default function Tasks() {
         return <span className={config.className}>{config.label}</span>
     }
 
-    // ############################################################
+    // ================================================================================
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -193,6 +196,8 @@ export default function Tasks() {
     const debouncedWrite=useDebounce(text, 1000);
 
     return (
+
+        <ErrorBoundary fallback={"error en el dashboard, dummy!"} onReset={()=>{}}>
 
         <>
 
@@ -242,9 +247,12 @@ export default function Tasks() {
         </div>
         {*/}
 
-    {/* ##############################}Muestra las tareas{############################## */}
+    {/* ==================== } Muestra las tareas { ==================== */}
 
     {loading && <Spinner/>}
+
+            {/*}Funciona(?), aunque no añade nada visualmente interesante{*/}
+            {/* loading && <Skeleton/>*/}
 
     {tasks.length === 0 ? (
         <p>No tasks...</p>
@@ -271,6 +279,27 @@ export default function Tasks() {
                 Completed
             </button>
 
+            {/*} Implementado con Types {*/}
+            <List
+                items={filteredTasks}
+                emptyMessage="No tasks found."
+                renderItem={(task)=>(
+                    <TaskCard
+                        key={task.id}
+                        task={task}
+                        onToggle={toggleTask}
+                        onEdit={(task)=>{
+                            setEditingTask(task);
+                            setIsEditing(true)}
+                        }
+                        onDelete={async (task)=>{
+                            await deleteTask(task.id)
+                        }}
+                    />
+                )}
+                />
+
+            {/*}
             {filteredTasks.map(task => (
                 <TaskCard
                     key={task.id}
@@ -285,6 +314,7 @@ export default function Tasks() {
                     }}
                 />
             ))}
+            {*/}
 
             <Modal
                 isOpen={isEditing}
@@ -346,5 +376,7 @@ export default function Tasks() {
         </>
     )}
             </>
+
+        </ErrorBoundary>
     );
 }

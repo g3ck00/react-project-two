@@ -4,6 +4,7 @@ import Button from "./Button";
 import {useState} from "react";
 import ConfirmDialog from "./ConfirmDialog.tsx";
 import Tooltip from "./Tooltip.tsx";
+import {ErrorBoundary} from "react-error-boundary";
 
 interface TaskCardProps {
     task: Task;
@@ -22,6 +23,9 @@ export default function TaskCard({
     const [showConfirm, setShowConfirm]=useState(false);
 
     return (
+
+        <ErrorBoundary fallback={"no cards, dummy!"} onReset={()=>{}}>
+
         <Card>
             <h3
                 style={{
@@ -107,5 +111,7 @@ export default function TaskCard({
             />
 
         </Card>
+
+        </ErrorBoundary>
     );
 }

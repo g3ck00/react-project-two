@@ -1,4 +1,5 @@
-import {forwardRef} from "react";
+import {forwardRef, Suspense} from "react";
+import CardSkeleton from "./CardSkeleton.tsx";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
@@ -17,6 +18,8 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
         ref
     ) => {
         return (
+            <>
+
             <Component
                 ref={ref}
                 className={`card ${className}`}
@@ -24,6 +27,8 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
             >
                 {children}
             </Component>
+
+            </>
         );
     }
 );

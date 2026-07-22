@@ -28,41 +28,64 @@ import Modal from "./components/ui/Modal.tsx";
 import TaskForm from "./components/ui/TaskForm.tsx"
 import api from "./services/api.ts";
 
-import {lazy, Suspense} from 'react';
 //import ProtectedRoute from './components/auth/ProtectedRoute';
 import Spinner from './components/ui/Spinner.tsx';
 
 import { useAuth } from "./hooks/useAuth";
-import Login from "./components/Login";
+
 import {useDebounce} from "./hooks/useDebounce.ts";
 
 /*
 //Páginas
+
+//Al no usar React.Lazy, las páginas se condicionan por defecto en carga síncrona (siempre cargadas con antelación)
 const LoginPage=lazy(()=>import ('./pages/LoginPage'));
 const RegisterPage=lazy(()=>import ('./pages/RegisterPage'));
+
 const DashboardPage=lazy(()=>import ('./pages/DashboardPage'));
 const TaskDetailPage=lazy(()=>import ('./pages/TaskDetailPage'));
  */
 import Home from "./pages/Home.tsx"
-import Tasks from "./pages/Tasks.tsx"
+//import Tasks from "./pages/Tasks.tsx"
 import About from "./pages/About.tsx"
 import Footer from "./components/ui/Footer.tsx";
 import Lab from "./pages/Lab.tsx";
 
+import {lazy, Suspense} from 'react';
+import Skeleton from "./components/ui/Skeleton.tsx";
+import {ErrorBoundary} from "react-error-boundary";
+
+//Importa la página y la condiciona con React.Lazy (la pagina se descarga solo cuando se necesite renderizarla)
+const Tasks=lazy(()=>import('./pages/Tasks.tsx'));
+
 function App(): JSX.Element {
-
-    //...
-
   return (
       <BrowserRouter>
+          <ErrorBoundary
+              fallback={"error, dummy!"}>
+          <Suspense fallback={<Skeleton/>}>
             <Routes>
               <Route path={"/"} element={<Layout children={undefined}/>}>
-                <Route index element={<Home />}/>
-                <Route path={"tasks"} element={<Tasks />}/>
-                <Route path={"about"} element={<About />}/>
-                  <Route path={"lab"} element={<Lab />}/>
+                  <Route index element={<Home />}
+                  />
+
+                  <Route path={"tasks"} element={<Tasks />}
+                  />
+
+                  <Route path={"about"} element={<About />}
+                  />
+
+                  <Route path={"lab"} element={<Lab />}
+                  />
+
+                  {/*}
+                  <Route path={"register"} element={<RegisterPage/>}>
+                  </Route>
+                  {*/}
               </Route>
             </Routes>
+          </Suspense>
+          </ErrorBoundary>
       </BrowserRouter>
   )
 }

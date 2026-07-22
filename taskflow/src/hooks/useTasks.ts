@@ -6,6 +6,9 @@ import api from "../services/api.ts";
 import type {Task} from "../types/task.ts";
 import {useLocalStorage} from "./useLocalStorage.ts";
 
+import type {ApiResponse} from "../services/api.ts";
+import {data} from "react-router-dom";
+
 export function useTasks(){
 
     //Las tasks migran a "state.tasks"
@@ -31,8 +34,15 @@ export function useTasks(){
     async function loadTasks(){
         try {
             dispatch({type: "SET_LOADING", payload: true});
+
+            //Old Method (antes de los Types)
             const data=await api.get("/tasks");
-            dispatch({type: "SET_TASKS", payload: data});
+
+            //Con Types
+            //const response = await api.get<ApiResponse<Task[]>>("/tasks");
+
+            dispatch({
+                type: "SET_TASKS", payload: data});
         } catch(error) {
             console.error("Can't load tasks. Is json-server running (npx...)?");
         } finally {

@@ -6,6 +6,7 @@ import SkipToContent from "./SkipToContent.tsx";
 import {NavLink, Outlet} from 'react-router-dom';
 import Button from "./Button.tsx";
 import {useAuth} from "../../hooks/useAuth.ts";
+import AuthBar from "../AuthBar.tsx";
 
 interface LayoutProps {
     children:React.ReactNode;
@@ -21,6 +22,8 @@ export default function Layout({
     return(
         <div className="app-layout">
                 {/*}<SkipToContent/>{*/}
+
+            <AuthBar/>
 
                 {showHeader && <Header userName={"Bryant"}/>}
 

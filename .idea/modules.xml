@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/react-project-two.iml" filepath="$PROJECT_DIR$/react-project-two.iml" />
+      <module fileurl="file://$PROJECT_DIR$/taskflow.iml" filepath="$PROJECT_DIR$/taskflow.iml" />
     </modules>
   </component>
 </project>

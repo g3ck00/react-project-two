@@ -15,7 +15,7 @@
       "id": "3",
       "title": "Do exercise",
       "description": "Strength training",
-      "completed": false,
+      "completed": true,
       "createdAt": "2026-06-18T12:45:00.000Z",
       "priority": "low",
       "tags": [
@@ -26,8 +26,15 @@
       "id": "GYK3KThQ9Tc",
       "title": "Buy food",
       "description": "Milk, eggs, bread",
-      "completed": false,
+      "completed": true,
       "createdAt": "2026-07-16T22:05:22.777Z"
+    },
+    {
+      "id": "y_dvqYOOgEY",
+      "title": "Walk",
+      "description": "At least 10000 steps",
+      "completed": false,
+      "createdAt": "2026-07-21T20:13:42.865Z"
     }
   ],
   "users": [
@@ -36,6 +43,41 @@
       "name": "bryant",
       "email": "bryant@test.com",
       "password": "123"
+    },
+    {
+      "username": "dummy",
+      "password": "123",
+      "id": "MX5XZYBoHUE"
+    },
+    {
+      "username": "",
+      "password": "123",
+      "id": "uKcn1o8BV7o"
+    },
+    {
+      "username": "daniel",
+      "password": "123",
+      "id": "iz0dDYKdLJQ"
+    },
+    {
+      "username": "daniel",
+      "password": "123",
+      "id": "167GA8soKzs"
+    },
+    {
+      "username": "daniel",
+      "password": "123",
+      "id": "R2Meq_SniI0"
+    },
+    {
+      "username": "daniel",
+      "password": "123",
+      "id": "EhAoBfSsrDM"
+    },
+    {
+      "username": "daniel",
+      "password": "123",
+      "id": "bWT8me2yJ78"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

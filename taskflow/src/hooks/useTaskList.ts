@@ -31,7 +31,9 @@
             try {
                 setLoading(true);
                 const data=await api.get("/tasks");
-                dispatch({type: "SET_TASKS", payload: data});
+                dispatch({
+                    type: "SET_TASKS",
+                    payload: data});
             } catch(error) {
                 console.error("Can't load tasks. Is json-server running (npx...)?");
             } finally {
